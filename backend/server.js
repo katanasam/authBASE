@@ -9,9 +9,13 @@ import { notFound, errorHandler } from "./middelware/errorMiddelware.js";
 // import routes
 import userRoutes from "./routes/userRoutes.js"
 import authRoutes  from "./routes/authRoutes.js"
+import adminRoutes  from "./routes/adminRoutes.js"
 
 // ---- import Controller  pour gestion des images
 import {setImageProfile} from './controller/userController.js'
+
+import cookieParser from "cookie-parser";
+
 
 // ---- import UPLOAD gestion
 import multer from "multer";
@@ -38,14 +42,20 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
+
+// COOKIE GESTION
+app.use(cookieParser());
+
 // -- @ROUTES LIST  --
 // ----> authentification [Création d'un user -register -login -logout]
 app.use("/api/auth", authRoutes);
 
 // ----> users [toutes les routes liées au "users" action]
 app.use("/api/users", userRoutes)
-app.post("/api/users/image", upload.single("profile_img"),setImageProfile)
-;
+app.post("/api/users/image", upload.single("profile_img"),setImageProfile);
+
+// ----> admin [toutes les routes liées au "admin" action]
+app.use("/api/admin", adminRoutes)
 
 
 // CONFIGURATION MULTER IMAGE GESTION

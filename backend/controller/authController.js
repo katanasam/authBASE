@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/UsersModel.js";
 
 // import Middelware
-import generateToken from "../middelware/generateToken.js";
+import {generateToken ,clearToken} from "../middelware/generateToken.js";
 
 
 // @desc    Enregistrement d'un user base de données
@@ -13,7 +13,6 @@ import generateToken from "../middelware/generateToken.js";
 const register = asyncHandler(async (request, response) => {
         // réccupération des informations dans le body
         const {email , password } =  request.body
-        console.log(email)
 
         // Création du nouvel user
         const new_user = await User.create({ email, password })
@@ -45,10 +44,15 @@ const register = asyncHandler(async (request, response) => {
 const login = asyncHandler (async (request, response) => {
 
     const {email,password} = request.body;
-    const user_found = User.findOne({email});
-    if(user_found & User.matchPassword(password)){
+    const user_found =  await User.findOne({email});
 
-        response.status(200).send({ Message :"lol"})
+    if(user_found && ( await user_found.matchPassword(password))){
+        generateToken(response, user_found._id);
+
+        response.status(200).json({  
+            _id: user_found.id,
+            email: user_found.email,
+            message: 'Sucess'})
 
     }
     else{
@@ -64,7 +68,8 @@ const login = asyncHandler (async (request, response) => {
 // @route   POST /api/auth/logaout/
 // @access  Private
 const logout = asyncHandler (async (request, response) => {
-    response.status(200).send({ Message :"logout"})
+    clearToken(response)
+    response.status(200).send({ Message :" User logout  "})
 });
 
 

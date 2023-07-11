@@ -57,10 +57,11 @@ UserSchema.pre('save', async function(next){
 });
 
 // Vérification du password 
-UserSchema.methods.matchPassword = async function (entered_Password){
-    return await bcrypt.compare(entered_Password, this.password)
-}
+UserSchema.methods.matchPassword = async function (entered_Password) {
+    return await bcrypt.compare(entered_Password, this.password);
 
-const User = mongoose.model("User" , UserSchema)
+};
+
+const User = mongoose.model("User" , UserSchema);
 
 export default User;
